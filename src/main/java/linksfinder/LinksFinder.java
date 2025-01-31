@@ -43,7 +43,7 @@ public class LinksFinder {
     private void lookupAndPrintLinks() {
         submitTaskToServiceExecutor(() -> processPageWithFinalizer(this.urlToBeginWith));
 
-        while (numberOfPlannedTasks.get() > 0) {
+        while (executorHasUnfinishedTasks()) {
             try {
                 Thread.sleep(5000);
                 System.out.println("Current number of planned tasks " + numberOfPlannedTasks);
@@ -56,6 +56,10 @@ public class LinksFinder {
         printFinalStatistics();
 
         executorService.shutdown();
+    }
+
+    private boolean executorHasUnfinishedTasks() {
+        return numberOfPlannedTasks.get() > 0;
     }
 
     private void processPage(String pageUrl) {
