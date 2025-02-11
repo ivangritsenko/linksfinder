@@ -2,6 +2,7 @@ package linksfinder;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -91,7 +92,11 @@ public class LinksFinder {
     private StringBuilder readHtmlPageContent(URL url) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        try (InputStream inputStream = url.openStream()) {
+        try {
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.addRequestProperty("User-Agent", "Mozilla/4.0");
+            InputStream inputStream = httpURLConnection.getInputStream();
+
             int inputStreamByte = readByteFrom(inputStream);
             stringBuilder = new StringBuilder();
 
@@ -100,7 +105,7 @@ public class LinksFinder {
                 inputStreamByte = readByteFrom(inputStream);
             }
         } catch (IOException e) {
-            printSynchronizedMessage("Couldn't read URL " + url);
+            printSynchronizedMessage("Couldn't read URL " + url + ", exception " + e);
         }
 
         return stringBuilder;
